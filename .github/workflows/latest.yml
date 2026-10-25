@@ -21,13 +21,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check Lua syntax
-        run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq lua5.1 > /dev/null
-          git ls-files -z -- DragonUI DragonUI_Options | grep -z '\.lua$' | xargs -0 -r -n 50 luac5.1 -p
+      - name: Install Lua 5.1
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lua5.1 > /dev/null
 
-      - name: Package
-        run: python3 .github/scripts/package_latest.py --addon DragonUI:DragonUI.toc:DragonUI --addon DragonUI_Options:DragonUI_Options.toc:DragonUI_Options --output "DragonUI-latest.zip"
+      - name: Check Lua syntax and package
+        run: python3 .github/scripts/package_latest.py --addon DragonUI:DragonUI.toc:DragonUI --addon DragonUI_Options:DragonUI_Options.toc:DragonUI_Options --luac luac5.1 --output "DragonUI-latest.zip"
 
       - name: Publish the Latest release
         env:
