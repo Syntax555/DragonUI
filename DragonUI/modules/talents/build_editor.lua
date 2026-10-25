@@ -61,6 +61,7 @@ end
 -- Entering and leaving ----------------------------------------------------------------------------
 
 function ns.EnterEditor(build)
+    if ns.Call("ExternalTalents", true) then return end
     local data = ns.TreeData()
     if not data then
         ns.Notify(L["talent data unavailable"], "error")
@@ -310,6 +311,7 @@ function ns.NewBuild(fromCurrent)
 end
 
 function ns.ImportFromInspect()
+    if ns.ExternalTalentView() then return end
     local unit = ns.inspectUnit
     if not unit then return end
     local classToken = select(2, UnitClass(unit))
@@ -396,6 +398,7 @@ local function pointsMissing(build, data, group)
 end
 
 function ns.LoadOntoCharacter(build)
+    if ns.Call("ExternalTalents", true) then return end
     local fighting = InCombatLockdown()
     if fighting then
         ns.Notify(ERR_NOT_IN_COMBAT, "error")

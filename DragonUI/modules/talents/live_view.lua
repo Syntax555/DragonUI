@@ -28,7 +28,10 @@ ns.CellKey = cellKey
 
 -- Custom servers ship shallower trees, so the window follows the class's real depth.
 function ns.MeasureDepth()
-    if ns.depthKnown then return end
+    if ns.depthKnown then
+        ns.SetDepth(ns.nativeDepth)
+        return
+    end
     local deepest, tabs = 0, GetNumTalentTabs(false, false) or 0
     for tab = 1, tabs do
         for index = 1, GetNumTalents(tab, false, false) or 0 do
@@ -38,6 +41,7 @@ function ns.MeasureDepth()
     end
     if deepest < 1 then return end
     ns.depthKnown = true
+    ns.nativeDepth = deepest
     ns.SetDepth(deepest)
 end
 
@@ -85,6 +89,22 @@ local function readTree(ctx, tab, perTier, available)
 end
 
 function ns.PaintLive()
+    local external = ns.ExternalTalentView()
+    if external then
+        external.external = true
+        ns.SetDepth(external.depth)
+        ns.PaintTrees(external.status and { count = 0, trees = {} } or external)
+        local points = {}
+        for tab, tree in ipairs(external.trees) do points[tab] = tree.points end
+        local classToken = external.classToken or select(2, UnitClass(ns.inspectUnit or "player"))
+        ns.SetClassArt(classToken, ns.DominantTree(points, external.count), false)
+        ns.SetPortraitClass(classToken)
+        ns.SetTitle(external.title)
+        ns.Call("SetPointsText", external.status or format("|cffffffff%d|r %s", max(0, external.available), L["points available"]))
+        local owner = GameTooltip:GetOwner()
+        if owner and owner.isTalentNode and owner:IsVisible() then ns.NodeTooltip(owner) end
+        return
+    end
     ns.MeasureDepth()
     local ctx = ns.ViewContext()
     local perTier = ctx.pet and (PET_TALENTS_PER_TIER or 3) or (PLAYER_TALENTS_PER_TIER or 5)
@@ -141,6 +161,7 @@ local function previewRankOf(tab, index, ctx)
 end
 
 function ns.UndoLast()
+    if ns.ExternalTalentView() then return end
     local ctx = ns.ViewContext()
     if not ctx.editable then return end
     local key = ns.UndoKey(ctx)
@@ -158,6 +179,7 @@ function ns.UndoLast()
 end
 
 function ns.ResetView()
+    if ns.ExternalTalentView() then return end
     local ctx = ns.ViewContext()
     if not ctx.editable then return end
     ns.undo[ns.UndoKey(ctx)] = nil
@@ -167,6 +189,11 @@ end
 -- Nodes: clicks and tooltips ----------------------------------------------------------------------
 
 function ns.NodeTooltip(node)
+    local external = ns.ExternalTalentView()
+    if external or node.externalView then
+        if external and external.Tooltip then return external.Tooltip(node, node.externalView) end
+        return
+    end
     if ns.edit then return ns.Call("EditorTooltip", node) end
     local ctx = ns.ViewContext()
     GameTooltip:SetOwner(node, "ANCHOR_RIGHT")
@@ -174,6 +201,11 @@ function ns.NodeTooltip(node)
 end
 
 function ns.NodeClicked(node, button)
+    local external = ns.ExternalTalentView()
+    if external or node.externalView then
+        if external and external.Click then return external.Click(node, button, node.externalView) end
+        return
+    end
     if ns.edit then return ns.Call("EditorClick", node, button) end
     local ctx = ns.ViewContext()
     if IsModifiedClick("CHATLINK") then
@@ -197,6 +229,7 @@ function ns.NodeClicked(node, button)
 end
 
 local function learnStaged()
+    if not ns.PetView() and ns.Call("ExternalTalents", true) then return end
     LearnPreviewTalents(ns.PetView() and true or false)
     PlaySound("igQuestListComplete")
 end

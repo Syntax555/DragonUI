@@ -63,6 +63,7 @@ end
 -- Apply, activate, reset and undo -----------------------------------------------------------------
 
 local function applyClicked()
+    if ns.ExternalTalentView() then return end
     if ns.edit then
         ns.Call("SaveBuild", ns.edit)
     else
@@ -205,16 +206,17 @@ function ns.UpdateFooter()
     local pet = ns.PetView()
     local browsing = ns.Browsing()
     local live = ns.LiveMode()
+    local external = ns.ExternalTalentView() ~= nil
     local ctx = ns.ViewContext()
-    local staged = not edit and ns.StagedPoints(ctx) > 0
+    local staged = not external and not edit and ns.StagedPoints(ctx) > 0
 
     local apply = bar.apply
     apply:SetText(edit and L["Save Build"] or L["Apply Changes"])
-    apply:SetShownCompat(live)
+    apply:SetShownCompat(live and not external)
     setEnabled(apply, edit or staged)
 
     local glow = bar.applyGlow
-    if live and staged then
+    if live and staged and not external then
         glow:Show()
         if not glow.bounce:IsPlaying() then glow.bounce:Play() end
     else
@@ -222,28 +224,30 @@ function ns.UpdateFooter()
         glow:Hide()
     end
 
-    local icons = live and not edit
+    local icons = live and not edit and not external
     showIcon(bar.reset, icons, staged)
     showIcon(bar.undo, icons, staged and ns.UndoDepth(ctx) > 0)
 
-    bar.activate:SetShownCompat(browsing)
-    if browsing then refreshActivate(bar.activate) end
+    bar.activate:SetShownCompat(browsing and not external)
+    if browsing and not external then refreshActivate(bar.activate) end
 
     local points = bar.points
     points:ClearAllPoints()
-    if edit then
+    if external then
+        points:SetPoint("LEFT", bar.search, "RIGHT", 24, 0)
+    elseif edit then
         points:SetPoint("LEFT", bar.exit, "RIGHT", 16, 0)
     else
         points:SetPoint("LEFT", bar.undo.art, "RIGHT", 16, 0)
     end
-    points:SetShownCompat(live)
+    points:SetShownCompat(live or external)
 
     bar.exit:SetShownCompat(edit)
-    bar.import:SetShownCompat(inspect)
-    bar.dropdown:SetShownCompat(live and not pet)
-    bar.search:SetShownCompat(live or browsing)
+    bar.import:SetShownCompat(inspect and not external)
+    bar.dropdown:SetShownCompat(live and not pet and not external)
+    bar.search:SetShownCompat(live or browsing or external)
 
-    ns.Call("ShowOrb", not inspect and not glyph and not edit)
+    ns.Call("ShowOrb", not inspect and not glyph and not edit and not external)
     ns.Call("UpdateSpecCog")
     ns.Call("UpdateGlyphSwitch")
     ns.Call("PlaceCatcher")

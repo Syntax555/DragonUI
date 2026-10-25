@@ -65,6 +65,12 @@ function ns.GlyphView()
     return ns.inspectUnit == nil and ns.glyphPage or false
 end
 
+-- ExternalTalents(own) supplies a canvas view; own ignores an inspected target.
+function ns.ExternalTalentView()
+    if ns.PetView() or ns.GlyphView() then return nil end
+    return ns.Call("ExternalTalents")
+end
+
 function ns.Browsing()
     return ns.inspectUnit == nil and not ns.PetView() and not ns.GlyphView()
         and ns.viewGroup ~= ns.ActiveGroup()
@@ -218,6 +224,9 @@ function ns.Repaint()
     if not win or not win:IsShown() then return end
     if ns.GlyphView() then
         ns.Call("PaintGlyphs")
+    elseif ns.ExternalTalentView() then
+        if ns.edit then ns.Call("LeaveEditorNow") end
+        ns.Call("PaintLive")
     elseif ns.edit then
         ns.Call("PaintEditor")
     else

@@ -447,6 +447,7 @@ function ns.PaintTrees(view)
                 local node = tree.nodes[k] or newNode(tree)
                 tree.nodes[k] = node
                 node.tree = t
+                node.externalView = view.external and view or nil
                 dressNode(node, entry)
                 placeNode(node, tree, entry, shift)
                 node:Show()

@@ -33,9 +33,14 @@ addon.GetTalentSpecName = ns.SpecName
 
 function ns.SpecTooltip(owner, group)
     local spent = {}
-    for tab = 1, GetNumTalentTabs(false, false) or 0 do
-        local _, _, points = GetTalentTabInfo(tab, false, false, group)
-        spent[#spent + 1] = points or 0
+    local external = ns.Call("ExternalTalents")
+    if external then
+        for _, tree in ipairs(external.trees) do spent[#spent + 1] = tree.points or 0 end
+    else
+        for tab = 1, GetNumTalentTabs(false, false) or 0 do
+            local _, _, points = GetTalentTabInfo(tab, false, false, group)
+            spent[#spent + 1] = points or 0
+        end
     end
     local status = group == ns.ActiveGroup() and { TALENT_ACTIVE_SPEC_STATUS, 0.1, 1, 0.1 } or nil
     ns.Tip(owner, nil, { ns.SpecName(group), 1, 1, 1 }, { table.concat(spent, " / "), 1, 0.82, 0 }, status)
@@ -105,12 +110,13 @@ end
 function ns.RefreshTabs()
     if not tab(1) then return end
     local outside = ns.inspectUnit == nil
-    local dual = ns.PlayerGroups() >= 2
+    local external = ns.Call("ExternalTalents") ~= nil
+    local dual = not external and ns.PlayerGroups() >= 2
     local wanted = {
         outside,
         outside and dual,
         outside and ns.PetHasTalents(),
-        outside and UnitLevel("player") >= (SHOW_INSCRIPTION_LEVEL or 15),
+        outside and not external and UnitLevel("player") >= (SHOW_INSCRIPTION_LEVEL or 15),
     }
     local labels = {
         dual and ns.SpecName(1) or TALENTS,
@@ -131,7 +137,7 @@ function ns.RefreshTabs()
             end
         end
     end
-    local selected = ns.viewGroup
+    local selected = external and 1 or ns.viewGroup
     if ns.GlyphView() then
         selected = 4
     elseif ns.PetView() then
@@ -158,7 +164,7 @@ end
 function ns.UpdateSpecCog()
     if not renameGear then return end
     renameGear:SetShownCompat(ns.inspectUnit == nil and not ns.GlyphView() and not ns.PetView()
-        and not ns.edit and ns.PlayerGroups() >= 2)
+        and not ns.edit and not ns.Call("ExternalTalents") and ns.PlayerGroups() >= 2)
 end
 
 local function cleanTyping(editBox)
