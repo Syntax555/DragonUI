@@ -1,3 +1,19 @@
+## mod-playerbots-portable fork
+
+This fork carries what [mod-playerbots-portable](https://github.com/Syntax555/mod-playerbots-portable) needs on top of [NeticSoul/DragonUI](https://github.com/NeticSoul/DragonUI). Work happens on `main`; every push publishes `DragonUI-latest.zip` in the [Latest release](https://github.com/Syntax555/DragonUI/releases/latest).
+
+Close WoW and extract the ZIP into `Interface/AddOns/` so that both `DragonUI/` and `DragonUI_Options/` are there. Replace older folders of the same names; your settings in `WTF/` are kept. Open the settings with `/dui`.
+
+The [EraTalents addon](https://github.com/Syntax555/mod-playerbots-portable/blob/main/docs/era-talents.md#dragonui) of the matching server adapts DragonUI's talent window, spellbook, level-up notice and glyph page to each character's earned era.
+
+Changes on `main`:
+
+- None yet: `main` equals upstream, tested with the server's integration.
+
+The server pins a tested commit of `main` in its `versions.lock.json`. Upstream updates are merged into `main`; the original README follows.
+
+---
+
 # 🐉 DragonUI for 3.3.5a
 
 <div align="center">
