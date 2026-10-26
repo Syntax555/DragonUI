@@ -247,6 +247,7 @@ function ns.ShowInspect(unit)
     ns.Call("UpdateFooter")
     if ns.win:IsShown() then
         ns.Repaint()
+        UpdateMicroButtons()
     else
         ns.win:Show()
     end
@@ -257,6 +258,7 @@ function ns.LeaveInspect()
     ns.inspectUnit = nil
     ns.SetTitle(TALENTS)
     ns.Call("UpdateFooter")
+    if ns.win and ns.win:IsShown() then UpdateMicroButtons() end
 end
 
 -- Live repaint triggers ---------------------------------------------------------------------------

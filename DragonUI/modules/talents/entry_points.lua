@@ -187,7 +187,7 @@ local function installEntryPoints()
         TalentMicroButton:SetScript("OnClick", function() ns.ToggleTalents() end)
     end
     hooksecurefunc("UpdateMicroButtons", function()
-        if ns.win and ns.win:IsShown() and TalentMicroButton then
+        if ns.win and ns.win:IsShown() and not ns.inspectUnit and TalentMicroButton then
             TalentMicroButton:SetButtonState("PUSHED", 1)
         end
     end)
