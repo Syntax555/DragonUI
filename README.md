@@ -1,16 +1,18 @@
 ## mod-playerbots-portable fork
 
-This fork carries what [mod-playerbots-portable](https://github.com/Syntax555/mod-playerbots-portable) needs on top of [NeticSoul/DragonUI](https://github.com/NeticSoul/DragonUI). Work happens on `main`; every push publishes `DragonUI-latest.zip` in the [Latest release](https://github.com/Syntax555/DragonUI/releases/latest).
+This fork carries what [mod-playerbots-portable](https://github.com/Syntax555/mod-playerbots-portable) needs on top of [NeticSoul/DragonUI](https://github.com/NeticSoul/DragonUI), imported at [`fd8281a2fa21`](https://github.com/NeticSoul/DragonUI/commit/fd8281a2fa2190bdd95bab95f2a15119a636ce43). Work happens on `main`; every push publishes `DragonUI-latest.zip` in the [Latest release](https://github.com/Syntax555/DragonUI/releases/latest).
 
 Close WoW and extract the ZIP into `Interface/AddOns/` so that both `DragonUI/` and `DragonUI_Options/` are there. Replace older folders of the same names; your settings in `WTF/` are kept. Open the settings with `/dui`.
 
 The [EraTalents addon](https://github.com/Syntax555/mod-playerbots-portable/blob/main/docs/era-talents.md#dragonui) of the matching server adapts DragonUI's talent window, spellbook, level-up notice and glyph page to each character's earned era.
 
-Changes on `main`:
+Portable integration:
 
-- None yet: `main` equals upstream, tested with the server's integration.
+- Renders historical player and inspected-character talents through DragonUI's existing tree canvas, with EraTalents supplying each character's own era and authoritative ranks.
+- Keeps the player's talent micro-button separate from inspected bots and lets MultiBot show the selected bot's talent-button state.
+- Reuses upstream spellbook layout, live module settings and per-character bag, bank and equipped-item counts in tooltips.
 
-The server pins a tested commit of `main` in its `versions.lock.json`. Upstream updates are merged into `main`; the original README follows.
+The server pins a tested commit of `main` in its `versions.lock.json`. Before contributing, read its [repository rules](https://github.com/Syntax555/mod-playerbots-portable/blob/main/AGENTS.md) and [fork workflow](https://github.com/Syntax555/mod-playerbots-portable/blob/main/CONTRIBUTING.md#changing-the-server). Upstream updates are merged into `main`; the original README follows.
 
 ---
 
