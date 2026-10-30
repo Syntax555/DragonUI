@@ -187,7 +187,10 @@ local defaults = {
                 anchor = "CENTER",
                 posX = 0,
                 posY = 160,
-                custom_position = false
+                custom_position = false,
+                always_hidden = false,
+                show_in_combat = false,
+                hide_in_combat = false,
             },
             positionPresetPanel = {
                 anchor = "TOP",
@@ -309,6 +312,10 @@ local defaults = {
         autoaccept = {
             friends = false, -- Accept party invites from players on the friends list
             guild = false, -- Accept party invites from guild members
+        },
+        camera = {
+            max_distance = false, -- Override cameraDistanceMaxFactor past the 2.0 the Interface slider allows
+            factor = 3.4, -- Factor applied while max_distance is on
         },
         -- ACTIONBAR SETTINGS
         mainbars = {
@@ -507,10 +514,6 @@ local defaults = {
             gryphonOffsetY = 0,
             xpbar = 'dragonflightui',
             exhaustion_tick = true -- Show exhaustion tick (on by default)
-        },
-
-        compatibility = {
-            d3d9ex_warning_seen = false,
         },
 
         buttons = {
@@ -868,6 +871,8 @@ local defaults = {
                 anchorParent = 'TOPLEFT',
                 x = 10,
                 y = -200,
+                buff_tooltip = "always", -- "always" | "combat" (hidden in combat) | "never": Blizzard's buff box on hover
+                always_hidden = false,
                 show_on_hover = false,
                 show_in_combat = false,
                 visibility_logic = "and",

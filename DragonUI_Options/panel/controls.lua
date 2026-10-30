@@ -928,12 +928,23 @@ function Controls:AddVisibilityFadeToggles(parent, opts)
     local dbPrefix = opts.dbPrefix
     local callback = opts.callback
 
-    self:AddToggle(parent, {
-        label = LO["Show on Hover Only"],
-        desc = opts.hoverDesc,
-        dbPath = dbPrefix .. ".show_on_hover",
-        callback = callback,
-    })
+    if opts.alwaysHidden then
+        self:AddToggle(parent, {
+            label = LO["Always Hidden"],
+            desc = opts.alwaysHiddenDesc,
+            dbPath = dbPrefix .. ".always_hidden",
+            callback = callback,
+        })
+    end
+
+    if not opts.noHover then
+        self:AddToggle(parent, {
+            label = LO["Show on Hover Only"],
+            desc = opts.hoverDesc,
+            dbPath = dbPrefix .. ".show_on_hover",
+            callback = callback,
+        })
+    end
 
     if opts.hideInCombat then
         -- Show in Combat / Hide in Combat are mutually exclusive — enabling one clears the other.
@@ -972,6 +983,8 @@ function Controls:AddVisibilityFadeToggles(parent, opts)
             callback = callback,
         })
     end
+
+    if opts.noHover then return end
 
     self:AddDropdown(parent, {
         label = LO["Hover/Combat Logic"],

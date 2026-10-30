@@ -471,6 +471,9 @@ L["Hover the coins in your bags to list the gold of every character that has log
 L["Show a tooltip with your other characters' gold when hovering the money in bags."] = true
 L["Show All Realms"] = true
 L["List characters from every realm instead of only the realm you are playing on."] = true
+L["Forget Character"] = true
+L["Delete the selected character's saved gold, item counts and offline bank. Your current character is never listed."] = true
+L["Forget all saved data of %s?"] = true
 
 -- Bag Sort
 L["Bag Sort"] = true
@@ -618,7 +621,7 @@ L["Button Appearance"] = true
 L["Main Bar Only Background"] = true
 L["Only the main action bar buttons will have a background."] = true
 L["Hide Main Bar Background"] = true
-L["Hide the background texture of the main action bar."] = true
+L["Hide the main bar's art and gryphons, leaving only the buttons."] = true
 L["Button Tooltips"] = true
 L["When to show tooltips on action, pet and stance buttons."] = true
 L["Always"] = true
@@ -653,7 +656,6 @@ L["Border Color"] = true
 -- Gryphons
 L["Gryphons"] = true
 L["End-cap ornaments flanking the main action bar."] = true
-L["Gryphon previews are hidden while D3D9Ex is active to avoid client crashes."] = true
 L["Style"] = true
 L["Gryphon Scale"] = true
 L["Gryphon Offset X"] = true
@@ -721,6 +723,9 @@ L["Fade the pet frame until you hover over it."] = true
 L["Fade the pet frame until you enter combat."] = true
 L["Fade party frames until you hover over them."] = true
 L["Fade party frames until you enter combat."] = true
+L["Buff Tooltip"] = true
+L["When to show the box of buffs and debuffs that opens as you hover a party member."] = true
+L["Hide the party frames at all times."] = true
 L["Fade boss frames until you hover over them."] = true
 L["Fade boss frames until you enter combat."] = true
 L["Boss"] = true
@@ -1485,6 +1490,9 @@ L["Who draws quest icons on plates when Questie is loaded with its own nameplate
 L["Ask"] = true
 L["Pointer Mode"] = true
 L["Show a single quest marker on any objective mob instead of separate kill/loot icons."] = true
+L["Reset Learned Quest Loot"] = true
+L["Forget which mobs nameplates learned drop your quest items. They are learned again as you play."] = true
+L["Forget every quest item source that nameplates have learned?"] = true
 L["Kill Icon"] = true
 L["Choose the icon shown for kill objectives."] = true
 L["Sword"] = true
@@ -1769,3 +1777,9 @@ L["Accept Invites from Friends"] = true
 L["Automatically accept party invites from players on your friends list."] = true
 L["Accept Invites from Guild Members"] = true
 L["Automatically accept party invites from members of your guild."] = true
+L["Camera"] = true
+L["Max Camera Distance"] = true
+L["Let the camera zoom out further than the game's own slider allows."] = true
+L["Camera Distance"] = true
+L["Error Messages"] = true
+L["The red errors and yellow quest updates in the middle of the screen."] = true
