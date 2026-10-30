@@ -49,10 +49,60 @@ end
 
 local SHAPE_PARTS = { "ring", "hover", "scroll" }
 
-local function onWell(piece, well, shape)
+local function onWell(piece, well, shape, grow)
     piece:ClearAllPoints()
-    piece:SetPoint("TOPLEFT", well, "TOPLEFT", shape[1] * GROW, shape[2] * GROW)
-    piece:SetPoint("BOTTOMRIGHT", well, "BOTTOMRIGHT", shape[3] * GROW, shape[4] * GROW)
+    piece:SetPoint("TOPLEFT", well, "TOPLEFT", shape[1] * grow, shape[2] * grow)
+    piece:SetPoint("BOTTOMRIGHT", well, "BOTTOMRIGHT", shape[3] * grow, shape[4] * grow)
+end
+
+-- Card, frame and header pieces are shared with integrations that draw another character's book
+-- in this style. A face is the icon well, backplate, trainer halo and scroll, icon, name and
+-- subtitle; its ring layer is returned for the frame art.
+function Book.CreateCardFace(card, iconButton, iconSize, textWidth, ringLevel)
+    local grow = iconButton / 40
+    card.grow = grow
+    local well = CreateFrame("Frame", nil, card)
+    well:SetSize(iconButton, iconButton)
+    well:SetPoint("LEFT", card, "LEFT", 0, 0)
+    card.well = well
+
+    card.plate = card:CreateTexture(nil, "BACKGROUND")
+    card.plate:SetAtlasTexture("spellbook-item-backplate", true)
+    card.plate:SetPoint("CENTER", card, "CENTER", 5, -5)
+
+    card.halo = card:CreateTexture(nil, "BORDER")
+    card.halo:SetAtlasTexture("spellbook-item-needtrainer-shadow")
+    card.halo:SetSize(56 * grow, 56 * grow)
+    card.halo:SetPoint("CENTER", well, "CENTER", 0, 0)
+
+    card.scroll = card:CreateTexture(nil, "ARTWORK")
+    card.icon = card:CreateTexture(nil, "OVERLAY")
+    card.icon:SetSize(iconSize, iconSize)
+    card.icon:SetPoint("CENTER", well, "CENTER", 0, 0)
+
+    card.name = Book.InkLabel(card, "OVERLAY", "GameFontHighlightLarge", 16)
+    card.name:SetWidth(textWidth)
+    card.name:SetPoint("TOPLEFT", well, "TOPRIGHT", 10, -1)
+    card.sub = Book.InkLabel(card, "OVERLAY", "GameFontNormalSmall", 13)
+    card.sub:SetWidth(textWidth)
+    card.sub:SetPoint("TOPLEFT", card.name, "BOTTOMLEFT", 0, -2)
+
+    local rings = CreateFrame("Frame", nil, card)
+    rings:SetFrameLevel(ringLevel)
+    rings:SetAllPoints(card)
+    card.ring = rings:CreateTexture(nil, "ARTWORK")
+    return rings
+end
+
+-- The icon frame of a "square", "squareOff" or "round" card and its trainer halo and scroll.
+function Book.PaintCardFrame(card, shapeName, trainer)
+    local shape = SHAPES[shapeName]
+    for _, part in ipairs(SHAPE_PARTS) do
+        onWell(card[part], card.well, shape, card.grow)
+        card[part]:SetAtlasTexture(shape[part])
+    end
+    card.halo:SetShownCompat(trainer)
+    card.scroll:SetShownCompat(trainer)
 end
 
 -- After a book change the recorded slot may hold another spell; identity is spellID or pet name.
@@ -159,42 +209,13 @@ local function buildCard(slot)
     card:SetFrameLevel(Book.Level("content"))
     card:RegisterForClicks("LeftButtonUp", "RightButtonUp")
     card:Hide()
-
-    local well = CreateFrame("Frame", nil, card)
-    well:SetSize(GRID.iconButton, GRID.iconButton)
-    well:SetPoint("LEFT", card, "LEFT", 0, 0)
-    card.well = well
-
-    card.plate = card:CreateTexture(nil, "BACKGROUND")
-    card.plate:SetAtlasTexture("spellbook-item-backplate", true)
-    card.plate:SetPoint("CENTER", card, "CENTER", 5, -5)
-
-    card.halo = card:CreateTexture(nil, "BORDER")
-    card.halo:SetAtlasTexture("spellbook-item-needtrainer-shadow")
-    card.halo:SetSize(56 * GROW, 56 * GROW)
-    card.halo:SetPoint("CENTER", well, "CENTER", 0, 0)
-
-    card.scroll = card:CreateTexture(nil, "ARTWORK")
-    card.icon = card:CreateTexture(nil, "OVERLAY")
-    card.icon:SetSize(GRID.iconSize, GRID.iconSize)
-    card.icon:SetPoint("CENTER", well, "CENTER", 0, 0)
-
-    card.name = Book.InkLabel(card, "OVERLAY", "GameFontHighlightLarge", 16)
-    card.name:SetWidth(TEXT_W)
-    card.name:SetPoint("TOPLEFT", well, "TOPRIGHT", 10, -1)
-    card.sub = Book.InkLabel(card, "OVERLAY", "GameFontNormalSmall", 13)
-    card.sub:SetWidth(TEXT_W)
-    card.sub:SetPoint("TOPLEFT", card.name, "BOTTOMLEFT", 0, -2)
+    local rings = Book.CreateCardFace(card, GRID.iconButton, GRID.iconSize, TEXT_W, Book.Level("cardRing"))
 
     card.sweep = CreateFrame("Cooldown", nil, card)
     card.sweep:SetFrameLevel(Book.Level("cardSweep"))
     card.sweep:SetPoint("TOPLEFT", card.icon, "TOPLEFT", 2 * GROW, -2 * GROW)
     card.sweep:SetPoint("BOTTOMRIGHT", card.icon, "BOTTOMRIGHT", -2 * GROW, 2 * GROW)
 
-    local rings = CreateFrame("Frame", nil, card)
-    rings:SetFrameLevel(Book.Level("cardRing"))
-    rings:SetAllPoints(card)
-    card.ring = rings:CreateTexture(nil, "ARTWORK")
     card.corners = rings:CreateTexture(nil, "OVERLAY")
     card.corners:SetAtlasTexture("spellbook-item-petautocast-corners")
     card.corners:SetPoint("TOPLEFT", card.icon, "TOPLEFT", 0, -1.5 * GROW)
@@ -206,8 +227,8 @@ local function buildCard(slot)
     shine:SetFrameLevel(Book.Level("cardGlow"))
     shine:SetAllPoints(card)
     card.glow = shine:CreateTexture(nil, "ARTWORK")
-    card.glow:SetPoint("TOPLEFT", well, "TOPLEFT", -4 * GROW, 3 * GROW)
-    card.glow:SetPoint("BOTTOMRIGHT", well, "BOTTOMRIGHT", 3 * GROW, -3 * GROW)
+    card.glow:SetPoint("TOPLEFT", card.well, "TOPLEFT", -4 * GROW, 3 * GROW)
+    card.glow:SetPoint("BOTTOMRIGHT", card.well, "BOTTOMRIGHT", 3 * GROW, -3 * GROW)
     card.glow:SetAtlasTexture("spellbook-item-unassigned-glow")
     card.glow:SetBlendMode("ADD")
     card.hover = shine:CreateTexture(nil, "OVERLAY")
@@ -369,17 +390,10 @@ function Book.PaintCard(card, entry)
     card.entry = entry
     card.epoch = nil
     local grey = entry.grey
-    -- The client cannot tell whether an unlearned spell is passive, so grey cards are all square.
-    local shape = SHAPES[grey and "squareOff" or (entry.passive and "round" or "square")]
-    for _, part in ipairs(SHAPE_PARTS) do
-        onWell(card[part], card.well, shape)
-        card[part]:SetAtlasTexture(shape[part])
-    end
-
     local trainer
     if grey then trainer = entry.state == "ready" else trainer = entry.trainer ~= nil end
-    card.halo:SetShownCompat(trainer)
-    card.scroll:SetShownCompat(trainer)
+    -- The client cannot tell whether an unlearned spell is passive, so grey cards are all square.
+    Book.PaintCardFrame(card, grey and "squareOff" or (entry.passive and "round" or "square"), trainer)
 
     paintIcon(card, entry.icon)
     card.icon:SetVertexColor(1, 1, 1)
@@ -422,11 +436,10 @@ end
 
 -- Headers -----------------------------------------------------------------------------------------
 
-local function buildHeader()
-    local header = CreateFrame("Frame", nil, Book.stage)
-    header:SetSize(Book.GRID.viewW, Book.GRID.headerH)
-    -- A header's plate reaches up over the previous row, so headers sit a level below the cards.
-    header:SetFrameLevel(Book.Level("header"))
+function Book.CreateSectionHeader(parent, width, height, level)
+    local header = CreateFrame("Frame", nil, parent)
+    header:SetSize(width, height)
+    header:SetFrameLevel(level)
 
     local plate = header:CreateTexture(nil, "BACKGROUND")
     plate:SetAtlasTexture("spellbook-list-backplate")
@@ -444,6 +457,12 @@ local function buildHeader()
     header.title:SetPoint("TOPLEFT", header, "TOPLEFT", -8, 0)
     header.title:SetPoint("BOTTOMRIGHT", header, "BOTTOMRIGHT", -60, 0)
     header.title:SetJustifyV("MIDDLE")
+    return header
+end
+
+local function buildHeader()
+    -- A header's plate reaches up over the previous row, so headers sit a level below the cards.
+    local header = Book.CreateSectionHeader(Book.stage, Book.GRID.viewW, Book.GRID.headerH, Book.Level("header"))
     headers[#headers + 1] = header
     return header
 end

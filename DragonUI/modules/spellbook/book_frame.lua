@@ -28,21 +28,36 @@ end
 
 -- Paper, ribbon, wood strip and page corner ------------------------------------------------------
 
-local function buildPaper(stage)
+-- Also for integrations that draw another character's book in this style.
+function Book.CreatePaperArt(stage, level)
     local paper = CreateFrame("Frame", nil, stage)
     paper:SetAllPoints(stage)
-    paper:SetFrameLevel(Book.Level("paper"))
+    paper:SetFrameLevel(level)
+    local sheets = {}
 
-    art.left = sheet(paper, "BACKGROUND", "spellbook-background-evergreen-left")
-    art.left:SetPoint("TOPLEFT", stage, "TOPLEFT", 2, -82)
-    art.left:SetPoint("BOTTOMRIGHT", stage, "BOTTOM", -1, 2)
+    sheets.left = sheet(paper, "BACKGROUND", "spellbook-background-evergreen-left")
+    sheets.left:SetPoint("TOPLEFT", stage, "TOPLEFT", 2, -82)
+    sheets.left:SetPoint("BOTTOMRIGHT", stage, "BOTTOM", -1, 2)
 
-    art.right = sheet(paper, "BACKGROUND", "spellbook-background-evergreen-right")
+    sheets.right = sheet(paper, "BACKGROUND", "spellbook-background-evergreen-right")
 
-    art.ribbon = sheet(paper, "BORDER", "spellbook-background-evergreen-ribbon")
-    art.ribbon:SetWidth(102)
-    art.ribbon:SetPoint("TOP", stage, "TOP", 0, -82)
-    art.ribbon:SetPoint("BOTTOM", stage, "BOTTOM", 0, 2)
+    sheets.ribbon = sheet(paper, "BORDER", "spellbook-background-evergreen-ribbon")
+    sheets.ribbon:SetWidth(102)
+    sheets.ribbon:SetPoint("TOP", stage, "TOP", 0, -82)
+    sheets.ribbon:SetPoint("BOTTOM", stage, "BOTTOM", 0, 2)
+
+    -- The wide strip is two halves: past texel column 1024 the d3d9ex client draws nothing.
+    sheets.wood = sheet(paper, "ARTWORK", "spellbook-header-left-half")
+    sheets.wood:SetHeight(58)
+    sheets.woodRight = sheet(paper, "ARTWORK", "spellbook-header-right-half")
+    sheets.woodRight:SetHeight(58)
+    sheets.woodRight:SetPoint("TOPLEFT", stage, "TOP", 0, -26)
+    sheets.woodRight:SetPoint("TOPRIGHT", stage, "TOPRIGHT", -8, -26)
+    return sheets
+end
+
+local function buildPaper(stage)
+    art = Book.CreatePaperArt(stage, Book.Level("paper"))
 
     -- Part of the pager block, drawn at scale 1; Book.PlaceControls puts it on the page.
     local fold = CreateFrame("Frame", nil, Book.root)
@@ -50,36 +65,34 @@ local function buildPaper(stage)
     fold:SetFrameLevel(Book.Level("corner"))
     Book.corner = sheet(fold, "ARTWORK", "spellbook-corner-flipbook-evergreen")
     Book.corner:SetSize(150, 155)
-
-    -- The wide strip is two halves: past texel column 1024 the d3d9ex client draws nothing.
-    art.wood = sheet(paper, "ARTWORK", "spellbook-header-left-half")
-    art.wood:SetHeight(58)
-    art.woodRight = sheet(paper, "ARTWORK", "spellbook-header-right-half")
-    art.woodRight:SetHeight(58)
-    art.woodRight:SetPoint("TOPLEFT", stage, "TOP", 0, -26)
-    art.woodRight:SetPoint("TOPRIGHT", stage, "TOPRIGHT", -8, -26)
 end
 
 -- Metal frame, portrait and title -----------------------------------------------------------------
 
-local function buildChrome(root)
+-- Returns the portrait and title, also for integrations that draw another character's book.
+function Book.CreateChrome(root, chromeLevel, titleLevel)
     local chrome = CreateFrame("Frame", nil, root)
     chrome:SetAllPoints(root)
-    chrome:SetFrameLevel(Book.Level("chrome"))
+    chrome:SetFrameLevel(chromeLevel)
     DragonUI_NineSlice.ApplyLayout(chrome, DragonUI_NineSlice.GetLayout("PortraitFrameTemplateMinimizable"))
 
     local portrait = chrome:CreateTexture(nil, "ARTWORK")
     portrait:SetSize(57, 57)
     portrait:SetPoint("TOPLEFT", root, "TOPLEFT", -3, 6)
-    portrait:SetTexture(addon._dir .. "ClassIcons\\" .. select(2, UnitClass("player")))
 
     local band = CreateFrame("Frame", nil, root)
     band:SetAllPoints(root)
-    band:SetFrameLevel(Book.Level("title"))
+    band:SetFrameLevel(titleLevel)
     local title = band:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     title:SetPoint("TOPLEFT", root, "TOPLEFT", 58, -6)
     title:SetPoint("TOPRIGHT", root, "TOPRIGHT", -24, -6)
     title:SetJustifyH("CENTER")
+    return portrait, title
+end
+
+local function buildChrome(root)
+    local portrait, title = Book.CreateChrome(root, Book.Level("chrome"), Book.Level("title"))
+    portrait:SetTexture(addon._dir .. "ClassIcons\\" .. select(2, UnitClass("player")))
     title:SetText(SPELLBOOK)
 end
 
