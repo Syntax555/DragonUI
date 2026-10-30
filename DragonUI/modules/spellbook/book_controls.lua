@@ -66,12 +66,17 @@ Book.SyncLoud, Book.SyncQuiet = syncing(true), syncing(false)
 
 -- Page corner -------------------------------------------------------------------------------------
 
-local function showCorner(frame)
+-- One of the flipbook's eight frames on a corner from Book.CreatePageCorner; 1 is the corner at rest.
+function Book.PaintCorner(corner, frame)
     local atlas = addon.atlasinfo["spellbook-corner-flipbook-evergreen"]
     local width, height = (atlas[5] - atlas[4]) / 4, (atlas[7] - atlas[6]) / 2
     local column, row = (frame - 1) % 4, floor((frame - 1) / 4)
-    Book.corner:SetTexCoord(atlas[4] + column * width, atlas[4] + (column + 1) * width,
+    corner:SetTexCoord(atlas[4] + column * width, atlas[4] + (column + 1) * width,
         atlas[6] + row * height, atlas[6] + (row + 1) * height)
+end
+
+local function showCorner(frame)
+    Book.PaintCorner(Book.corner, frame)
 end
 
 -- Disabled arrows send no OnLeave, so while tracking the step itself asks where the pointer is.
@@ -119,54 +124,86 @@ local function fitSearch(tabsRight)
     Book.search:SetWidth(max(SEARCH_MIN, min(SEARCH_W, searchRight - tabsRight - 12)))
 end
 
+-- Skins labelled tabs (CharacterFrameTabButtonTemplate) and hangs them left to right from the wood
+-- strip of a book at this content scale; place(index, x, y) can put more at each tab. Returns the
+-- right edge of the last tab. Also for integrations that draw another character's book.
+function Book.PlaceTabs(root, faces, scale, place)
+    local CP = addon.CharacterPanel
+    local x, y = Book.OnBook("TOPLEFT", TAB_LEFT, TAB_BOTTOM, scale)
+    x = max(x, TAB_MIN_LEFT)
+    if not faces[1] then return x end
+    -- Below ~0.56 the wood strip is shorter than a tab; the tab then keeps its top under the title.
+    y = min(y, -Book.BAND - faces[1]:GetHeight())
+    for index, face in ipairs(faces) do
+        if CP and CP.ReskinTab then
+            CP.ReskinTab(face, true)
+        else
+            PanelTemplates_TabResize(face, 0)
+        end
+        face:ClearAllPoints()
+        face:SetPoint("BOTTOMLEFT", root, "TOPLEFT", x, y)
+        if place then place(index, x, y) end
+        x = x + face:GetWidth() + 1
+    end
+    return x
+end
+
 function Book.LayoutTabs()
     if laying then return end
     laying = true
-    local CP = addon.CharacterPanel
     local root = Book.root
-    local x, y = Book.OnBook("TOPLEFT", TAB_LEFT, TAB_BOTTOM, Book.contentScale)
-    x = max(x, TAB_MIN_LEFT)
-    -- Below ~0.56 the wood strip is shorter than a tab; the tab then keeps its top under the title.
-    y = min(y, -Book.BAND - tabs[1]:GetHeight())
+    local locked = Book.Locked()
+    local faces, cats = {}, {}
     for _, cat in ipairs(TAB_ORDER) do
-        local face, catcher = tabs[cat], Book.tabCatchers[cat]
-        local label = Book.labels[cat]
+        local face, label = tabs[cat], Book.labels[cat]
         face:SetShownCompat(label ~= nil)
+        -- The catcher is protected; tabs never change in combat, so it keeps its last place.
+        if not locked then Book.tabCatchers[cat]:SetShownCompat(label ~= nil) end
         if label then
             face:SetText(label)
-            if CP and CP.ReskinTab then
-                CP.ReskinTab(face, true)
-            else
-                PanelTemplates_TabResize(face, 0)
-            end
-            face:ClearAllPoints()
-            face:SetPoint("BOTTOMLEFT", root, "TOPLEFT", x, y)
+            faces[#faces + 1], cats[#cats + 1] = face, cat
         end
-        -- The catcher is protected; tabs never change in combat, so it keeps its last place.
-        if not Book.Locked() then
-            catcher:SetShownCompat(label ~= nil)
-            catcher:ClearAllPoints()
-            catcher:SetPoint("BOTTOMLEFT", root, "TOPLEFT", x, y)
-            catcher:SetSize(face:GetWidth(), face:GetHeight())
-        end
-        if label then x = x + face:GetWidth() + 1 end
     end
-    fitSearch(x)
+    fitSearch(Book.PlaceTabs(root, faces, Book.contentScale, function(index, x, y)
+        if locked then return end
+        local face, catcher = faces[index], Book.tabCatchers[cats[index]]
+        catcher:ClearAllPoints()
+        catcher:SetPoint("BOTTOMLEFT", root, "TOPLEFT", x, y)
+        catcher:SetSize(face:GetWidth(), face:GetHeight())
+    end))
     liftFlashes()
     laying = false
+end
+
+-- The scale-1 controls on a book at this content scale, each optional: `top` right-aligned below the
+-- frame's top-right corner (this book's gear), the pager, its page corner and the page arrows from
+-- Book.DressPageArrow. Also for integrations that draw another character's book.
+function Book.PlaceControlsOn(root, scale, controls)
+    local top = controls.top
+    if top then
+        top:ClearAllPoints()
+        top:SetPoint("RIGHT", root, "TOPRIGHT", Book.OnBook("TOPRIGHT", -14, -55, scale))
+    end
+    local x, y = Book.OnBook("BOTTOMRIGHT", -75, 40, scale)
+    if controls.pager then
+        controls.pager:ClearAllPoints()
+        controls.pager:SetPoint("BOTTOMRIGHT", root, "BOTTOMRIGHT", x, y)
+    end
+    for _, arrow in ipairs(controls.arrows or {}) do
+        arrow:ClearAllPoints()
+        arrow:SetPoint("BOTTOMRIGHT", root, "BOTTOMRIGHT", x + arrow.offset, y)
+    end
+    if controls.corner then
+        controls.corner:ClearAllPoints()
+        controls.corner:SetPoint("BOTTOMRIGHT", root, "BOTTOMRIGHT", Book.OnBook("BOTTOMRIGHT", -15, 6, scale))
+    end
 end
 
 -- Out of combat only (the page arrows are secure); after every content-scale change.
 function Book.PlaceControls()
     local root, scale = Book.root, Book.contentScale
-    local gearX, gearY = Book.OnBook("TOPRIGHT", -14, -55, scale)
-    gearRight = gearX
-    gear:ClearAllPoints()
-    gear:SetPoint("RIGHT", root, "TOPRIGHT", gearX, gearY)
-    pager:ClearAllPoints()
-    pager:SetPoint("BOTTOMRIGHT", root, "BOTTOMRIGHT", Book.OnBook("BOTTOMRIGHT", -75, 40, scale))
-    Book.corner:ClearAllPoints()
-    Book.corner:SetPoint("BOTTOMRIGHT", root, "BOTTOMRIGHT", Book.OnBook("BOTTOMRIGHT", -15, 6, scale))
+    gearRight = Book.OnBook("TOPRIGHT", -14, -55, scale)
+    Book.PlaceControlsOn(root, scale, { top = gear, pager = pager, corner = Book.corner })
     Book.PlaceArrows()
     if Book.tabCatchers then Book.LayoutTabs() end
 end
@@ -264,10 +301,12 @@ end
 
 -- Search box --------------------------------------------------------------------------------------
 
-local function buildSearch(bar)
-    local finder = CreateFrame("EditBox", nil, bar)
+-- The search box, unplaced. onQuery receives every change as Book.NormalizeQuery's query; refuse,
+-- when given, can keep focus and the clear button away. Also for integrations that draw another
+-- character's book.
+function Book.CreateSearchBox(parent, onQuery, refuse)
+    local finder = CreateFrame("EditBox", nil, parent)
     finder:SetSize(SEARCH_W, 22)
-    finder:SetPoint("RIGHT", gear, "LEFT", -6, 0)
     finder:SetAutoFocus(false)
     finder:EnableMouse(true)
     finder:SetFontObject(ChatFontNormal)
@@ -314,7 +353,7 @@ local function buildSearch(bar)
     clear:SetScript("OnEnter", function() cross:SetAlpha(1) end)
     clear:SetScript("OnLeave", function() cross:SetAlpha(0.6) end)
     clear:SetScript("OnClick", function()
-        if Book.RefuseInCombat() then return end
+        if refuse and refuse() then return end
         finder:SetText("")
         finder:ClearFocus()
     end)
@@ -326,7 +365,7 @@ local function buildSearch(bar)
     end
 
     finder:SetScript("OnEditFocusGained", function()
-        if Book.RefuseInCombat() then return finder:ClearFocus() end
+        if refuse and refuse() then return finder:ClearFocus() end
         finder.focused = true
         syncHints()
     end)
@@ -342,12 +381,18 @@ local function buildSearch(bar)
     finder:SetScript("OnEnterPressed", finder.ClearFocus)
     finder:SetScript("OnTextChanged", function(self)
         syncHints()
-        local query = Book.NormalizeQuery(self:GetText())
+        onQuery(Book.NormalizeQuery(self:GetText()))
+    end)
+    return finder
+end
+
+local function buildSearch(bar)
+    Book.search = Book.CreateSearchBox(bar, function(query)
         if query == Book.query or Book.Locked() then return end
         Book.query = query
         Book.RestartFromFirstPage()
-    end)
-    Book.search = finder
+    end, Book.RefuseInCombat)
+    Book.search:SetPoint("RIGHT", gear, "LEFT", -6, 0)
 end
 
 -- Settings menu -----------------------------------------------------------------------------------
@@ -475,57 +520,92 @@ end
 
 -- One or two pages button -------------------------------------------------------------------------
 
-local function modeTooltip()
-    tip:SetOwner(modeButton, "ANCHOR_LEFT")
-    tip:SetText(Book.Wide() and tr["Show single page"] or tr["Show second page"])
+local function modeTooltip(button)
+    tip:SetOwner(button, "ANCHOR_LEFT")
+    tip:SetText(button.isWide() and tr["Show single page"] or tr["Show second page"])
     tip:Show()
 end
 
-function Book.PaintModeButton()
-    local atlas = Book.Wide() and "redbutton-condense" or "redbutton-expand"
-    modeButton:GetNormalTexture():SetAtlasTexture(atlas)
-    modeButton:GetPushedTexture():SetAtlasTexture(atlas .. "-pressed")
-    modeButton:GetDisabledTexture():SetAtlasTexture(atlas .. "-disabled")
-    if tip:IsOwned(modeButton) then modeTooltip() end
+-- Shows which way a button from Book.CreateModeButton switches; this book's own by default.
+function Book.PaintModeButton(button)
+    button = button or modeButton
+    local atlas = button.isWide() and "redbutton-condense" or "redbutton-expand"
+    button:GetNormalTexture():SetAtlasTexture(atlas)
+    button:GetPushedTexture():SetAtlasTexture(atlas .. "-pressed")
+    button:GetDisabledTexture():SetAtlasTexture(atlas .. "-disabled")
+    if tip:IsOwned(button) then modeTooltip(button) end
 end
 
-local function buildModeButton(root)
-    modeButton = CreateFrame("Button", nil, root)
-    modeButton:SetSize(24, 24)
-    modeButton:SetPoint("TOPRIGHT", root, "TOPRIGHT", -24, 0)
-    modeButton:SetFrameLevel(Book.Level("buttons"))
+-- The red one-or-two-pages button; isWide() tells whether two pages show. Also for integrations
+-- that draw another character's book.
+function Book.CreateModeButton(root, level, isWide, onClick)
+    local button = CreateFrame("Button", nil, root)
+    button:SetSize(24, 24)
+    button:SetPoint("TOPRIGHT", root, "TOPRIGHT", -24, 0)
+    button:SetFrameLevel(level)
+    button.isWide = isWide
     -- Every state needs a texture object before SetAtlasTexture can dress it.
     local sheet = addon.atlasinfo["redbutton-highlight"][1]
     for _, setter in ipairs(STATE_SETTERS) do
-        modeButton[setter](modeButton, sheet)
+        button[setter](button, sheet)
     end
-    modeButton:GetHighlightTexture():SetAtlasTexture("redbutton-highlight")
-    modeButton:GetHighlightTexture():SetBlendMode("ADD")
-    modeButton:SetScript("OnClick", function() Book.SetMinimized(Book.Wide()) end)
-    modeButton:SetScript("OnEnter", modeTooltip)
-    modeButton:SetScript("OnLeave", GameTooltip_Hide)
+    button:GetHighlightTexture():SetAtlasTexture("redbutton-highlight")
+    button:GetHighlightTexture():SetBlendMode("ADD")
+    button:SetScript("OnClick", onClick)
+    button:SetScript("OnEnter", modeTooltip)
+    button:SetScript("OnLeave", GameTooltip_Hide)
+    return button
+end
+
+local function buildModeButton(root)
+    modeButton = Book.CreateModeButton(root, Book.Level("buttons"), Book.Wide,
+        function() Book.SetMinimized(Book.Wide()) end)
 end
 
 -- Pager and empty line ----------------------------------------------------------------------------
 
+-- The pager block and its page line, unplaced; Book.PlaceControlsOn puts them on the page. Also for
+-- integrations that draw another character's book.
+function Book.CreatePager(parent)
+    local block = CreateFrame("Frame", nil, parent)
+    block:SetSize(146, 32)
+    local line = block:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+    -- Ends just left of the back arrow (see PlaceArrows), so longer translations grow leftwards.
+    line:SetPoint("RIGHT", block, "RIGHT", -76, 0)
+    line:SetJustifyH("RIGHT")
+    line:SetTextColor(0, 0, 0)
+    line:SetShadowOffset(0, 0)
+    return block, line
+end
+
+-- A page arrow's art ("Next" or "Prev") and its offset from the pager's spot.
+function Book.DressPageArrow(turner, direction)
+    turner:SetSize(32, 32)
+    turner.offset = direction == "Prev" and -32 - 8 or 0
+    local art = "Interface\\Buttons\\UI-SpellbookIcon-" .. direction .. "Page-"
+    turner:SetNormalTexture(art .. "Up")
+    turner:SetPushedTexture(art .. "Down")
+    turner:SetDisabledTexture(art .. "Disabled")
+    turner:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+end
+
+-- The line a filtered page shows when nothing matches, centred on the first page of the stage.
+function Book.CreateEmptyLine(parent, stage)
+    local grid = Book.GRID
+    local line = Book.InkLabel(parent, "ARTWORK", "GameFontHighlightLarge", 16)
+    line:SetJustifyH("CENTER")
+    line:SetPoint("CENTER", stage, "TOPLEFT", Book.PageLeft(1) + grid.viewW / 2, grid.viewTop - grid.viewH / 2)
+    return line
+end
+
 local function buildPager(bar)
-    pager = CreateFrame("Frame", nil, bar)
-    pager:SetSize(146, 32)
+    pager, pageText = Book.CreatePager(bar)
     pager:EnableMouse(true)
     pager:SetScript("OnEnter", Book.PagerEnter)
-    pageText = pager:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-    -- Ends just left of the back arrow (see PlaceArrows), so longer translations grow leftwards.
-    pageText:SetPoint("RIGHT", pager, "RIGHT", -76, 0)
-    pageText:SetJustifyH("RIGHT")
-    pageText:SetTextColor(0, 0, 0)
-    pageText:SetShadowOffset(0, 0)
 end
 
 local function buildEmptyLine(bar)
-    local grid = Book.GRID
-    emptyText = Book.InkLabel(bar, "ARTWORK", "GameFontHighlightLarge", 16)
-    emptyText:SetJustifyH("CENTER")
-    emptyText:SetPoint("CENTER", Book.stage, "TOPLEFT", Book.PageLeft(1) + grid.viewW / 2, grid.viewTop - grid.viewH / 2)
+    emptyText = Book.CreateEmptyLine(bar, Book.stage)
 end
 
 function Book.BuildControls()

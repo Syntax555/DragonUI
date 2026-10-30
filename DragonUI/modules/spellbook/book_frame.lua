@@ -56,15 +56,19 @@ function Book.CreatePaperArt(stage, level)
     return sheets
 end
 
+-- Part of the pager block, drawn at scale 1 over the root; Book.PlaceControlsOn puts it on the page.
+function Book.CreatePageCorner(root, level)
+    local fold = CreateFrame("Frame", nil, root)
+    fold:SetAllPoints(root)
+    fold:SetFrameLevel(level)
+    local corner = sheet(fold, "ARTWORK", "spellbook-corner-flipbook-evergreen")
+    corner:SetSize(150, 155)
+    return corner
+end
+
 local function buildPaper(stage)
     art = Book.CreatePaperArt(stage, Book.Level("paper"))
-
-    -- Part of the pager block, drawn at scale 1; Book.PlaceControls puts it on the page.
-    local fold = CreateFrame("Frame", nil, Book.root)
-    fold:SetAllPoints(Book.root)
-    fold:SetFrameLevel(Book.Level("corner"))
-    Book.corner = sheet(fold, "ARTWORK", "spellbook-corner-flipbook-evergreen")
-    Book.corner:SetSize(150, 155)
+    Book.corner = Book.CreatePageCorner(Book.root, Book.Level("corner"))
 end
 
 -- Metal frame, portrait and title -----------------------------------------------------------------
@@ -90,6 +94,19 @@ function Book.CreateChrome(root, chromeLevel, titleLevel)
     return portrait, title
 end
 
+-- The close button's art and place on the frame, for this book's secure button and for integrations.
+function Book.DressCloseButton(close, root, level)
+    close:SetSize(24, 24)
+    close:SetPoint("TOPRIGHT", root, "TOPRIGHT", 1, 0)
+    close:SetFrameLevel(level)
+    close:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up")
+    close:SetPushedTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Down")
+    close:SetDisabledTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Disabled")
+    close:SetHighlightTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight", "ADD")
+    local CP = addon.CharacterPanel
+    if CP and CP.ModernizeCloseButton then CP.ModernizeCloseButton(close, root, 1, 0) end
+end
+
 local function buildChrome(root)
     local portrait, title = Book.CreateChrome(root, Book.Level("chrome"), Book.Level("title"))
     portrait:SetTexture(addon._dir .. "ClassIcons\\" .. select(2, UnitClass("player")))
@@ -98,23 +115,28 @@ end
 
 -- One or two pages --------------------------------------------------------------------------------
 
-function Book.LayoutMode()
-    local wide, stage = Book.Wide(), Book.stage
-    stage:SetSize(Book.WindowWidth(), Book.HEIGHT)
-    art.left:SetShownCompat(wide)
-    art.ribbon:SetShownCompat(wide)
-    art.right:ClearAllPoints()
+-- The paper from Book.CreatePaperArt for one or two pages.
+function Book.LayoutPaperArt(sheets, stage, wide)
+    sheets.left:SetShownCompat(wide)
+    sheets.ribbon:SetShownCompat(wide)
+    sheets.right:ClearAllPoints()
     if wide then
-        art.right:SetPoint("TOPLEFT", stage, "TOP", 1, -82)
-        art.right:SetPoint("BOTTOMRIGHT", stage, "BOTTOMRIGHT", -2, 2)
+        sheets.right:SetPoint("TOPLEFT", stage, "TOP", 1, -82)
+        sheets.right:SetPoint("BOTTOMRIGHT", stage, "BOTTOMRIGHT", -2, 2)
     else
-        art.right:SetPoint("TOPLEFT", stage, "TOPLEFT", 2, -82)
-        art.right:SetPoint("BOTTOMRIGHT", stage, "BOTTOMRIGHT", 0, 2)
+        sheets.right:SetPoint("TOPLEFT", stage, "TOPLEFT", 2, -82)
+        sheets.right:SetPoint("BOTTOMRIGHT", stage, "BOTTOMRIGHT", 0, 2)
     end
-    art.wood:ClearAllPoints()
-    art.wood:SetPoint("TOPLEFT", stage, "TOPLEFT", 8, -26)
-    art.wood:SetPoint("TOPRIGHT", stage, wide and "TOP" or "TOPRIGHT", wide and 0 or -8, -26)
-    art.woodRight:SetShownCompat(wide)
+    sheets.wood:ClearAllPoints()
+    sheets.wood:SetPoint("TOPLEFT", stage, "TOPLEFT", 8, -26)
+    sheets.wood:SetPoint("TOPRIGHT", stage, wide and "TOP" or "TOPRIGHT", wide and 0 or -8, -26)
+    sheets.woodRight:SetShownCompat(wide)
+end
+
+function Book.LayoutMode()
+    local stage = Book.stage
+    stage:SetSize(Book.WindowWidth(), Book.HEIGHT)
+    Book.LayoutPaperArt(art, stage, Book.Wide())
     Book.PaintModeButton()
 end
 

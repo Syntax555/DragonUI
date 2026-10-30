@@ -3,7 +3,7 @@
 local addon = select(2, ...)
 local Book = addon.SpellbookModule
 
-local ipairs, pairs, next = ipairs, pairs, next
+local pairs, next = pairs, next
 
 -- Snippets: restricted code rejects any body naming the closure keyword; @PET@/@SLOTS@ are filled.
 
@@ -255,43 +255,25 @@ end
 
 local function buildClose(root)
     local close = CreateFrame("Button", "DragonUI_SpellbookFrameCloseButton", root, "SecureHandlerClickTemplate")
-    close:SetSize(24, 24)
-    close:SetPoint("TOPRIGHT", root, "TOPRIGHT", 1, 0)
-    close:SetFrameLevel(Book.Level("buttons"))
+    Book.DressCloseButton(close, root, Book.Level("buttons"))
     close:RegisterForClicks("AnyUp")
-    close:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up")
-    close:SetPushedTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Down")
-    close:SetDisabledTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Disabled")
-    close:SetHighlightTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight", "ADD")
     SecureHandlerSetFrameRef(close, "root", root)
     close:SetAttribute("_onclick", [[self:GetFrameRef("root"):Hide()]])
-    local CP = addon.CharacterPanel
-    if CP and CP.ModernizeCloseButton then CP.ModernizeCloseButton(close, root, 1, 0) end
 end
 
 local turners = {}
 
 -- Out of combat only. Drawn at scale 1, spaced in UI units from the pager's spot on the page.
 function Book.PlaceArrows()
-    local x, y = Book.OnBook("BOTTOMRIGHT", -75, 40, Book.contentScale)
-    for _, turner in ipairs(turners) do
-        turner:ClearAllPoints()
-        turner:SetPoint("BOTTOMRIGHT", Book.root, "BOTTOMRIGHT", x + turner.offset, y)
-    end
+    Book.PlaceControlsOn(Book.root, Book.contentScale, { arrows = turners })
 end
 
-local function buildArrow(root, direction, step, offset)
+local function buildArrow(root, direction, step)
     local turner = CreateFrame("Button", nil, root, "SecureHandlerClickTemplate")
-    turner:SetSize(32, 32)
-    turner.offset = offset
+    Book.DressPageArrow(turner, direction)
     turners[#turners + 1] = turner
     turner:SetFrameLevel(Book.Level("catcher"))
     turner:RegisterForClicks("LeftButtonUp")
-    local art = "Interface\\Buttons\\UI-SpellbookIcon-" .. direction .. "Page-"
-    turner:SetNormalTexture(art .. "Up")
-    turner:SetPushedTexture(art .. "Down")
-    turner:SetDisabledTexture(art .. "Disabled")
-    turner:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
     turner:SetAttribute("step", step)
     linked(turner, fill(STEP))
     turner:SetScript("OnEnter", Book.PagerEnter)
@@ -322,8 +304,8 @@ function Book.BuildSecure()
         buildSlot(root, slot)
     end
     buildClose(root)
-    SecureHandlerSetFrameRef(root, "forward", buildArrow(root, "Next", 1, 0))
-    SecureHandlerSetFrameRef(root, "back", buildArrow(root, "Prev", -1, -32 - 8))
+    SecureHandlerSetFrameRef(root, "forward", buildArrow(root, "Next", 1))
+    SecureHandlerSetFrameRef(root, "back", buildArrow(root, "Prev", -1))
     Book.PlaceArrows()
     Book.tabCatchers = {}
     for cat = 1, Book.CATEGORIES do
