@@ -15,6 +15,11 @@ addon.LevelUpData = {
         WARLOCK = { {10,697,0}, {20,712,0}, {30,691,0}, {50,1122,0}, {60,18540,0} },
         WARRIOR = { {10,71,0}, {10,355,0}, {10,7386,0}, {30,2458,0} },
     },
+    -- {level, feature}; the glyph slots after the two at 15 follow Player::InitGlyphsForLevel and GlyphSlot.dbc
+    features = {
+        {10,"talents"}, {10,"battlegrounds"}, {15,"dungeonFinder"}, {15,"glyphs"}, {30,"majorGlyph"},
+        {40,"dualSpec"}, {50,"minorGlyph"}, {70,"minorGlyph"}, {80,"majorGlyph"},
+    },
     -- {level, spellID}
     riding = { {20,33388}, {40,33391}, {60,34090}, {70,34091}, {77,54197} },
     -- {level, BattlemasterList ID, icon, enUS name used only if the client has none}

@@ -95,16 +95,17 @@ local HEROIC_ICONS = {
     "Interface\\Icons\\Achievement_Zone_Northrend_01",
 }
 
+-- LevelUpData.features names these; a server integration can drop or move a feature it gates.
 local FEATURES = {
-    [10] = { { TALENT_POINTS, ICON_TALENTS }, { BATTLEGROUNDS, ICON_BATTLEGROUNDS } },
-    [15] = { { LOOKING_FOR_DUNGEON, ICON_DUNGEON_FINDER }, { GLYPHS, ICON_GLYPHS } },
-    [40] = { { L["Dual Talent Specialization"], ICON_DUAL_SPEC } },
+    talents = { TALENT_POINTS, ICON_TALENTS },
+    battlegrounds = { BATTLEGROUNDS, ICON_BATTLEGROUNDS },
+    dungeonFinder = { LOOKING_FOR_DUNGEON, ICON_DUNGEON_FINDER },
+    glyphs = { GLYPHS, ICON_GLYPHS },
+    dualSpec = { L["Dual Talent Specialization"], ICON_DUAL_SPEC },
+    majorGlyph = { L["Major Glyph Slot"], ICON_GLYPHS },
+    minorGlyph = { L["Minor Glyph Slot"], ICON_GLYPHS },
 }
 local FIRST_TALENT_LEVEL = 10
--- Sockets opened after the two at 15 (Player::InitGlyphsForLevel), typed by GlyphSlot.dbc.
-local GLYPH_SLOT_AT = {
-    [30] = L["Major Glyph Slot"], [50] = L["Minor Glyph Slot"], [70] = L["Minor Glyph Slot"], [80] = L["Major Glyph Slot"],
-}
 -- Plate Mail and Mail: retail lists armor skills as features, not abilities.
 local FEATURE_SPELLS = { [750] = true, [8737] = true }
 
@@ -190,13 +191,11 @@ local function Add(list, entry)
     if entry then list[#list + 1] = entry end
 end
 
-local function AddFeatures(out, from, to)
-    for level = from, to do
-        for _, feature in ipairs(FEATURES[level] or EMPTY) do
-            Add(out, { kind = "feature", text = feature[1], icon = feature[2], level = level })
-        end
-        if GLYPH_SLOT_AT[level] then
-            Add(out, { kind = "feature", text = GLYPH_SLOT_AT[level], icon = ICON_GLYPHS, level = level })
+local function AddFeatures(out, data, from, to)
+    for _, row in ipairs(data.features or EMPTY) do
+        local feature = FEATURES[row[2]]
+        if feature and row[1] >= from and row[1] <= to then
+            Add(out, { kind = "feature", text = feature[1], icon = feature[2], level = row[1] })
         end
     end
 end
@@ -320,7 +319,7 @@ local function BuildCharacterUnlocks(from, to, talentPoints)
     local features, talents, spells, battlegrounds = {}, {}, {}, {}
     local dungeons, heroics, raids = {}, {}, {}
 
-    AddFeatures(features, from, to)
+    AddFeatures(features, data, from, to)
     AddRiding(features, data, from, to)
     -- At 10 the first point is the "Talent Points" feature itself.
     if talentPoints and talentPoints > 0 and not (from == FIRST_TALENT_LEVEL and to == FIRST_TALENT_LEVEL) then
