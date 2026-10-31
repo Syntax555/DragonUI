@@ -22,7 +22,7 @@ local FUI = addon.ForeverUI
 -- ============================================================================
 
 -- Keys to exclude from preset snapshots (they are meta / self-referencing)
-local EXCLUDED_KEYS = { presets = true, version = true }
+local EXCLUDED_KEYS = { presets = true, version = true, optionsPanelScale = true }
 
 local Serializer = {}
 LibStub("AceSerializer-3.0"):Embed(Serializer)
@@ -367,8 +367,8 @@ local function BuildGeneralTab(scroll)
     -- ====================================================================
     local about = C:AddSection(scroll, LO["About"])
 
-    C:AddLabel(about, "|cff" .. C.Theme.accentHex .. LO["DragonUI"] .. " v2.5|r")
-    C:AddDescription(about, LO["Bringing the retail WoW look to 3.3.5a, inspired by Dragonflight UI."])
+    C:AddLabel(about, "|cff" .. C.Theme.accentHex .. LO["DragonUI"] .. " v" .. addon.RELEASE_VERSION .. "|r")
+    C:AddDescription(about, LO["Bringing the retail WoW look to 3.3.5a."])
     C:AddDescription(about, LO["Created and maintained by NeticSoul, with community contributions."])
     C:AddDescription(about, LO["GitHub (select and Ctrl+C to copy):"])
     C:AddCopyableText(about, "https://github.com/NeticSoul/DragonUI")

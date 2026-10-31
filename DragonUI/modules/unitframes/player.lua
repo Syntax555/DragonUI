@@ -134,10 +134,8 @@ local RUNE_COORDS = {
     [1] = {0 / 128, 34 / 128, 0 / 128, 34 / 128}, -- Blood
     [2] = {0 / 128, 34 / 128, 68 / 128, 102 / 128}, -- Unholy
     [3] = {34 / 128, 68 / 128, 0 / 128, 34 / 128}, -- Frost
-    [4] = {68 / 128, 102 / 128, 0 / 128, 34 / 128} -- Death
+    [4] = {38 / 128, 72 / 128, 68 / 128, 102 / 128} -- Death
 }
-local RUNE_TYPE_DEATH = 4
-local DEATH_RUNE_COORDS = RUNE_COORDS[3]
 
 -- ============================================================================
 -- UTILITY FUNCTIONS
@@ -802,16 +800,8 @@ local function UpdateRune(button)
     if runeType and RUNE_COORDS[runeType] then
         local runeTexture = _G[button:GetName() .. "Rune"]
         if runeTexture then
-            local texture = TEXTURES.RUNE_TEXTURE
-            local coords = RUNE_COORDS[runeType]
-
-            if runeType == RUNE_TYPE_DEATH then
-                texture = TEXTURES.RUNE_TEXTURE_PURPLE
-                coords = DEATH_RUNE_COORDS
-            end
-
-            runeTexture:SetTexture(texture)
-            runeTexture:SetTexCoord(unpack(coords))
+            runeTexture:SetTexture(TEXTURES.RUNE_TEXTURE)
+            runeTexture:SetTexCoord(unpack(RUNE_COORDS[runeType]))
         end
     end
 end
@@ -1273,7 +1263,8 @@ local function ApplyPVPIconVisibility()
             hitArea:SetSize(39, 37)
             hitArea:SetPoint("TOPLEFT", PlayerPVPIcon)
         end
-        if shown then hitArea:Show() else hitArea:Hide() end
+        -- Blizzard only fills its tooltip when flagged; the editor's preview emblem has none to show.
+        if shown and not preview then hitArea:Show() else hitArea:Hide() end
     end
 end
 
@@ -2512,8 +2503,8 @@ local function RestorePlayerPortraitTexture()
     if not IsInVehicle() then
         -- No SetDrawLayer here: BigDebuffs moves the portrait's layer so its icon draws on top (#242).
         SetPortraitTexture(PlayerPortrait, "player")
-        PlayerPortrait:SetTexCoord(0, 1, 0, 1)
     end
+    PlayerPortrait:SetTexCoord(0, 1, 0, 1)
     PlayerPortrait:SetAlpha(1)
 end
 
@@ -2522,12 +2513,8 @@ local function UpdatePlayerClassPortrait()
     local config = GetPlayerConfig()
     if not config then return end
 
-    local useClassPortrait = config.classPortrait and not IsInVehicle()
-    if useClassPortrait and UF.ApplyClassPortraitToTexture(
-        "player",
-        PlayerPortrait,
-        config.alternativeClassIcons
-    ) then
+    local useClassPortrait = (config.classPortrait or config.racePortrait) and not IsInVehicle()
+    if useClassPortrait and UF.ApplyPortraitStyle("player", PlayerPortrait, config) then
         local dragonFrame = _G["DragonUIUnitframeFrame"]
         if dragonFrame and dragonFrame.ClassPortraitOverlay then
             dragonFrame.ClassPortraitOverlay:Hide()
@@ -2553,12 +2540,8 @@ local function RefreshPlayerPortraitState(unit)
        and dragonFrame.PortraitOverlay
        and dragonFrame.PortraitOverlay:IsShown() then
         local pConfig = GetPlayerConfig()
-        if pConfig and pConfig.classPortrait and not IsInVehicle() and portraitUnit ~= "vehicle" then
-            if not UF.ApplyClassPortraitToTexture(
-                "player",
-                dragonFrame.PortraitOverlayTexture,
-                pConfig.alternativeClassIcons
-            ) then
+        if pConfig and (pConfig.classPortrait or pConfig.racePortrait) and not IsInVehicle() and portraitUnit ~= "vehicle" then
+            if not UF.ApplyPortraitStyle("player", dragonFrame.PortraitOverlayTexture, pConfig) then
                 SetPortraitTexture(dragonFrame.PortraitOverlayTexture, portraitUnit)
             end
         else

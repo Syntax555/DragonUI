@@ -248,6 +248,9 @@ R.bars = function()
     local refresh = addon.RefreshMainbars or addon.RefreshMainbarsSystem
     if refresh then refresh() end
 end
+R.mainBarArt = function()
+    if addon.RefreshMainBarArt then addon.RefreshMainBarArt() end
+end
 R.extrabar = function()
     if addon.RefreshExtrabarFrame then addon.RefreshExtrabarFrame() end
 end
@@ -931,12 +934,22 @@ local function PortraitRows(key, refresh)
         Check(T("Class Portrait"), base .. ".classPortrait", refresh, {
             set = function(value)
                 SetDB(base .. ".classPortrait", value)
-                if value then SetDB(base .. ".alternativeClassIcons", true) end
+                if value then
+                    SetDB(base .. ".alternativeClassIcons", true)
+                    SetDB(base .. ".racePortrait", false)
+                end
                 Immediate(refresh)
                 E.Rebuild()
             end }),
         Check(T("Alternative Class Icons"), base .. ".alternativeClassIcons", refresh, {
             disabled = function() return not GetDB(base .. ".classPortrait") end }),
+        Check(T("Race Portrait"), base .. ".racePortrait", refresh, {
+            set = function(value)
+                SetDB(base .. ".racePortrait", value)
+                if value then SetDB(base .. ".classPortrait", false) end
+                Immediate(refresh)
+                E.Rebuild()
+            end }),
     }
 end
 
@@ -1084,6 +1097,7 @@ E.Register("party", { settings = Join({
     Section(T("Appearance"), true),
     Check(T("Class Color Health"), "unitframe.party.classcolor", R.partyText),
     Drop(T("PvP Icon Style"), "unitframe.party.pvp_icon_style", PVP_STYLES, R.partyText),
+    PortraitRows("party", R.partyText),
     Section(T("Text Display"), true, nil, PreviewTexts("party")),
     TextRows("party", R.partyText),
 }) })
@@ -1798,6 +1812,7 @@ E.Register("combopoints", { settings = {
 
 -- Position only: the dialog keeps its coordinate rows and the reset that re-attaches them to the player frame.
 E.Register("dkrunes", { settings = {} })
+E.Register("totemframe", { settings = {} })
 
 -- Forever's swing timer rows, ranges at our HUD's 0.72 (see swingtimer.lua), one dialog per bar.
 local function SwingTimerSettings(hand)
@@ -1957,8 +1972,13 @@ E.Register("__manager", { settings = {
         after = function() E.SyncFrames(); E.Rebuild() end }),
 
     Section(T("Button Appearance"), true, NoButtons),
-    Check(T("Main Bar Only Background"), "buttons.only_actionbackground", R.buttons, { hidden = NoButtons }),
-    ReloadCheck(T("Hide Main Bar Background"), "buttons.hide_main_bar_background", { hidden = NoButtons }),
+    Check(T("Hide Main Bar Art"), "buttons.hide_main_bar_background", R.mainBarArt, { hidden = NoButtons }),
+    Check(T("Hide Button Backgrounds"), "buttons.hide_slot_backgrounds", R.buttons, {
+        hidden = NoButtons,
+        after = function() E.Rebuild() end }),
+    Check(T("Main Bar Only Background"), "buttons.only_actionbackground", R.buttons, {
+        hidden = NoButtons,
+        disabled = function() return GetDB("buttons.hide_slot_backgrounds") end }),
     Drop(T("Button Tooltips"), "buttons.tooltips", {
         { "always", T("Always") },
         { "combat", T("Hide in Combat") },
@@ -2025,7 +2045,7 @@ Fades("errorMessages", Dotted("widgets.errorMessages"), R.errorMessagesVisibilit
 -- Dialogs with few settings and no wide dropdowns shrink to the width of their coordinate rows.
 for _, frameName in ipairs({
     "boss", "bagsbar", "stance", "totembar", "xpbar", "repbar", "tooltip", "questtracker",
-    "weapon_enchants", "tot", "fot", "petbar", "combopoints", "dkrunes",
+    "weapon_enchants", "tot", "fot", "petbar", "combopoints", "dkrunes", "totemframe",
 }) do
     local def = E.Get(frameName)
     if def then def.compact = true end

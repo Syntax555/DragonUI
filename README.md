@@ -66,8 +66,8 @@ before contributing. Propose fork-specific changes here; preserve upstream
 credits and notices when merging source updates.
 
 This fork imports [NeticSoul/DragonUI](https://github.com/NeticSoul/DragonUI) at
-[`6cfcd75a2e57`](https://github.com/NeticSoul/DragonUI/commit/6cfcd75a2e5762637322fd495cd4302b203b77df).
-The [original README](https://github.com/NeticSoul/DragonUI/blob/6cfcd75a2e5762637322fd495cd4302b203b77df/README.md)
+[`80392604ef4e`](https://github.com/NeticSoul/DragonUI/commit/80392604ef4e7398f4d8fbaa8204d5011b7a6b3d).
+The [original README](https://github.com/NeticSoul/DragonUI/blob/80392604ef4e7398f4d8fbaa8204d5011b7a6b3d/README.md)
 covers the general UI features and retains the full author, contributor and
 reference credits. Use this fork's download above for its integration changes.
 
