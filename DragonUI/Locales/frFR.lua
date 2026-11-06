@@ -121,6 +121,10 @@ L["Retail-style skin for the Blizzard loot window"] = "Apparence Retail pour la 
 -- Version Check Module
 L["Version Check"] = "Vérification de version"
 L["Broadcast and detect addon version updates across group members"] = "Détecte les mises à jour de l'addon entre les membres du groupe en envoyant et recevant la version"
+L["New version available! %s"] = "Nouvelle version disponible ! %s"
+L["Download"] = "Télécharger"
+L["Restart the game to finish updating DragonUI. If this message keeps showing, reinstall it."] = "Redémarrez le jeu pour terminer la mise à jour de DragonUI. Si ce message persiste, réinstallez-le."
+L["DragonUI and DragonUI_Options are from different versions. Install both from the same download."] = "DragonUI et DragonUI_Options ne sont pas de la même version. Installez les deux depuis le même téléchargement."
 
 -- Nameplate addon compatibility popup
 L["Reads native nameplate alpha to identify the target's plate; conflicts with DragonUI's default anti-dim behavior."] = "Utilise la transparence native de la plaque pour identifier la plaque de la cible ; entre en conflit avec le comportement anti-assombrissement par défaut de DragonUI."
@@ -1097,6 +1101,12 @@ L["Turn it back on from the AddOns list at character selection."] = "Réactivez-
 -- ============================================================================
 L["Flight Map"] = "Carte des trajets aériens"
 L["Retail-style flight master map window chrome"] = "Apparence Retail pour la fenêtre de la carte des trajets aériens"
+L["Inspect Window"] = "Fenêtre d'inspection"
+L["Retail-style frame and tabs for the inspect window"] = "Cadre et onglets style Retail pour la fenêtre d'inspection"
+L["Dressing Room"] = "Cabine d'essayage"
+L["Retail-style frame for the dressing room"] = "Cadre style Retail pour la cabine d'essayage"
+L["Retail (by class)"] = "Retail (par classe)"
+L["Wrath (by race)"] = "Wrath (par race)"
 L["Mail"] = "Courrier"
 L["Retail-style mail window with Open All button"] = "Fenêtre de courrier Retail avec un bouton Tout ouvrir"
 L["Open All"] = "Tout ouvrir"

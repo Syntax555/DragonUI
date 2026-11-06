@@ -487,6 +487,10 @@ L["Copy Text"] = "Копировать текст"
 
 L["Version Check"] = "Проверка версий"
 L["Broadcast and detect addon version updates across group members"] = "Обнаруживает обновления аддона среди участников группы, отправляя и получая версию"
+L["New version available! %s"] = "Доступна новая версия! %s"
+L["Download"] = "Скачать"
+L["Restart the game to finish updating DragonUI. If this message keeps showing, reinstall it."] = "Перезапустите игру, чтобы завершить обновление DragonUI. Если это сообщение не исчезнет, переустановите его."
+L["DragonUI and DragonUI_Options are from different versions. Install both from the same download."] = "DragonUI и DragonUI_Options разных версий. Установите оба из одной загрузки."
 
 -- Quest nameplate icons wizard (Questie coexistence)
 L["Quest Icons on Nameplates"] = "Значки заданий на табличках"
@@ -1166,6 +1170,12 @@ L["Low chance of gaining skill"] = "Низкий шанс повысить на�
 -- ============================================================================
 L["Flight Map"] = "Карта полетов"
 L["Retail-style flight master map window chrome"] = "Окно распорядителя полетов в стиле Retail"
+L["Inspect Window"] = "Окно осмотра"
+L["Retail-style frame and tabs for the inspect window"] = "Рамка и вкладки окна осмотра в стиле Retail"
+L["Dressing Room"] = "Примерочная"
+L["Retail-style frame for the dressing room"] = "Рамка примерочной в стиле Retail"
+L["Retail (by class)"] = "Retail (по классу)"
+L["Wrath (by race)"] = "Wrath (по расе)"
 L["Mail"] = "Почта"
 L["Retail-style mail window with Open All button"] = "Окно почты в стиле Retail с кнопкой «Открыть все»"
 L["Open All"] = "Открыть все"

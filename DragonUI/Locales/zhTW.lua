@@ -121,6 +121,10 @@ L["Retail-style skin for the Blizzard loot window"] = "暴雪拾取視窗的正�
 -- Version Check Module
 L["Version Check"] = "版本檢查"
 L["Broadcast and detect addon version updates across group members"] = "檢測隊伍成員間插件版本更新，通過廣播和接收版本資訊"
+L["New version available! %s"] = "有新版本可用！%s"
+L["Download"] = "下載"
+L["Restart the game to finish updating DragonUI. If this message keeps showing, reinstall it."] = "請重新啟動遊戲以完成 DragonUI 的更新。如果此訊息仍然出現，請重新安裝。"
+L["DragonUI and DragonUI_Options are from different versions. Install both from the same download."] = "DragonUI 和 DragonUI_Options 的版本不同。請從同一個下載包安裝兩者。"
 
 -- Nameplate addon compatibility popup
 L["Reads native nameplate alpha to identify the target's plate; conflicts with DragonUI's default anti-dim behavior."] = "透過名牌的原生透明度來識別目標名牌，與 DragonUI 預設的防變暗行為衝突。"
@@ -1097,6 +1101,12 @@ L["Turn it back on from the AddOns list at character selection."] = "可在角�
 -- ============================================================================
 L["Flight Map"] = "飛行地圖"
 L["Retail-style flight master map window chrome"] = "飛行管理員地圖視窗的正式服風格外觀"
+L["Inspect Window"] = "觀察視窗"
+L["Retail-style frame and tabs for the inspect window"] = "觀察視窗的正式服風格外框和標籤"
+L["Dressing Room"] = "試衣間"
+L["Retail-style frame for the dressing room"] = "試衣間的正式服風格外框"
+L["Retail (by class)"] = "正式服（依職業）"
+L["Wrath (by race)"] = "巫妖王之怒（依種族）"
 L["Mail"] = "郵件"
 L["Retail-style mail window with Open All button"] = "附有全部開啟按鈕的正式服風格郵件視窗"
 L["Open All"] = "全部開啟"

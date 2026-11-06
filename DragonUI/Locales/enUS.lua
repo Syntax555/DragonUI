@@ -608,6 +608,10 @@ L["Copy Text"] = true
 -- Version Check Module
 L["Version Check"] = true
 L["Broadcast and detect addon version updates across group members"] = true
+L["New version available! %s"] = true
+L["Download"] = true
+L["Restart the game to finish updating DragonUI. If this message keeps showing, reinstall it."] = true
+L["DragonUI and DragonUI_Options are from different versions. Install both from the same download."] = true
 
 -- Quest nameplate icons wizard (Questie coexistence)
 L["Quest Icons on Nameplates"] = true
@@ -1165,6 +1169,12 @@ L["Low chance of gaining skill"] = true
 -- ============================================================================
 L["Flight Map"] = true
 L["Retail-style flight master map window chrome"] = true
+L["Inspect Window"] = true
+L["Retail-style frame and tabs for the inspect window"] = true
+L["Dressing Room"] = true
+L["Retail-style frame for the dressing room"] = true
+L["Retail (by class)"] = true
+L["Wrath (by race)"] = true
 L["Mail"] = true
 L["Retail-style mail window with Open All button"] = true
 L["Open All"] = true

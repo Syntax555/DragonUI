@@ -487,6 +487,10 @@ L["Copy Text"] = "Text kopieren"
 -- Version Check Module
 L["Version Check"] = "Versionsprüfung"
 L["Broadcast and detect addon version updates across group members"] = "Erkennt Addon-Updates zwischen Gruppenmitgliedern durch Senden und Empfangen der Version"
+L["New version available! %s"] = "Neue Version verfügbar! %s"
+L["Download"] = "Herunterladen"
+L["Restart the game to finish updating DragonUI. If this message keeps showing, reinstall it."] = "Starte das Spiel neu, um das Update von DragonUI abzuschließen. Erscheint diese Meldung weiterhin, installiere es neu."
+L["DragonUI and DragonUI_Options are from different versions. Install both from the same download."] = "DragonUI und DragonUI_Options stammen aus verschiedenen Versionen. Installiere beide aus demselben Download."
 
 -- Quest nameplate icons wizard (Questie coexistence)
 L["Quest Icons on Nameplates"] = "Questsymbole auf Namensplaketten"
@@ -1166,6 +1170,12 @@ L["Turn it back on from the AddOns list at character selection."] = "Aktiviere e
 -- ============================================================================
 L["Flight Map"] = "Flugkarte"
 L["Retail-style flight master map window chrome"] = "Retail-Design für das Flugmeister-Kartenfenster"
+L["Inspect Window"] = "Betrachtungsfenster"
+L["Retail-style frame and tabs for the inspect window"] = "Retail-Design für Rahmen und Reiter des Betrachtungsfensters"
+L["Dressing Room"] = "Anprobe"
+L["Retail-style frame for the dressing room"] = "Retail-Design für den Rahmen der Anprobe"
+L["Retail (by class)"] = "Retail (nach Klasse)"
+L["Wrath (by race)"] = "Wrath (nach Volk)"
 L["Mail"] = "Post"
 L["Retail-style mail window with Open All button"] = "Retail-Design für das Postfenster mit „Alle öffnen“-Schaltfläche"
 L["Open All"] = "Alle öffnen"

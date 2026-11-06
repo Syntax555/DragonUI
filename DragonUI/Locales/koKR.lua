@@ -486,6 +486,10 @@ L["Copy Text"] = "텍스트 복사"
 -- Version Check Module
 L["Version Check"] = "버전 확인"
 L["Broadcast and detect addon version updates across group members"] = "그룹원 간 애드온 버전 업데이트를 감지하고 방송합니다"
+L["New version available! %s"] = "새 버전이 나왔습니다! %s"
+L["Download"] = "다운로드"
+L["Restart the game to finish updating DragonUI. If this message keeps showing, reinstall it."] = "DragonUI 업데이트를 마치려면 게임을 재시작하세요. 이 메시지가 계속 나오면 다시 설치하세요."
+L["DragonUI and DragonUI_Options are from different versions. Install both from the same download."] = "DragonUI와 DragonUI_Options의 버전이 다릅니다. 같은 다운로드에서 둘 다 설치하세요."
 
 -- Quest nameplate icons wizard (Questie coexistence)
 L["Quest Icons on Nameplates"] = "이름표의 퀘스트 아이콘"
@@ -1164,6 +1168,12 @@ L["Turn it back on from the AddOns list at character selection."] = "캐릭터 �
 -- ============================================================================
 L["Flight Map"] = "비행 지도"
 L["Retail-style flight master map window chrome"] = "비행 조련사 지도 창에 정식 서버 스타일 스킨 적용"
+L["Inspect Window"] = "살펴보기 창"
+L["Retail-style frame and tabs for the inspect window"] = "살펴보기 창에 정식 서버 스타일 테두리와 탭 적용"
+L["Dressing Room"] = "미리보기 창"
+L["Retail-style frame for the dressing room"] = "미리보기 창에 정식 서버 스타일 테두리 적용"
+L["Retail (by class)"] = "정식 서버 (직업별)"
+L["Wrath (by race)"] = "리치 왕의 분노 (종족별)"
 L["Mail"] = "우편"
 L["Retail-style mail window with Open All button"] = "모두 열기 버튼이 있는 정식 서버 스타일 우편 창"
 L["Open All"] = "모두 열기"

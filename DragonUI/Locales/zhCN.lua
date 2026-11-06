@@ -512,6 +512,10 @@ L["URL"] = "URL"
 -- Version Check Module
 L["Version Check"] = "版本检查"
 L["Broadcast and detect addon version updates across group members"] = "检测队伍成员间插件版本更新，通过广播和接收版本信息"
+L["New version available! %s"] = "有新版本可用！%s"
+L["Download"] = "下载"
+L["Restart the game to finish updating DragonUI. If this message keeps showing, reinstall it."] = "请重启游戏以完成 DragonUI 的更新。如果此消息仍然出现，请重新安装。"
+L["DragonUI and DragonUI_Options are from different versions. Install both from the same download."] = "DragonUI 和 DragonUI_Options 的版本不同。请从同一个下载包安装两者。"
 
 -- Quest nameplate icons wizard (Questie coexistence)
 L["Quest Icons on Nameplates"] = "姓名板任务图标"
@@ -1159,6 +1163,12 @@ L["Turn it back on from the AddOns list at character selection."] = "可在角�
 -- ============================================================================
 L["Flight Map"] = "飞行地图"
 L["Retail-style flight master map window chrome"] = "飞行管理员地图窗口的正式服风格皮肤"
+L["Inspect Window"] = "观察窗口"
+L["Retail-style frame and tabs for the inspect window"] = "观察窗口的正式服风格边框和标签"
+L["Dressing Room"] = "试衣间"
+L["Retail-style frame for the dressing room"] = "试衣间的正式服风格边框"
+L["Retail (by class)"] = "正式服（按职业）"
+L["Wrath (by race)"] = "巫妖王之怒（按种族）"
 L["Mail"] = "邮件"
 L["Retail-style mail window with Open All button"] = "带有全部打开按钮的正式服风格邮件窗口"
 L["Open All"] = "全部打开"

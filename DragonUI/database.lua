@@ -23,6 +23,7 @@ local defaults = {
         auraDurations = {}, -- Observed debuff durations for nameplates: [spellId] = seconds
         addonIcons = {}, -- Addon manager icons learned from loaded addons: [lowercase folder] = { icon, coords }
         itemOwnership = { version = 1, realms = {} }, -- Per-realm, per-character item counts for the tooltip module
+        versionCheck = {}, -- Newest signed DragonUI version seen from other players: update = { version, key, signature }
         uiScaleEnabled = false, -- DragonUI sets UIParent's scale itself, which can go below Blizzard's 0.64
         uiScale = false -- That scale; false until first enabled, then seeded from the scale on screen
     },
@@ -1425,6 +1426,13 @@ local defaults = {
             },
             taxiframe = {
                 enabled = true, -- Retail-style flight master map window
+            },
+            inspectframe = {
+                enabled = true, -- Retail-style frame and tabs for the inspect window
+            },
+            dressupframe = {
+                enabled = true, -- Retail-style frame for the dressing room
+                backdrop = "wotlk", -- "wotlk" = race art with the dressing room's own lifts, "retail" = class art
             },
         },
 

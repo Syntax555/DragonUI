@@ -125,6 +125,10 @@ L["Retail-style skin for the Blizzard loot window"] = "Visual estilo Retail para
 -- Version Check Module
 L["Version Check"] = "Verificação de versão"
 L["Broadcast and detect addon version updates across group members"] = "Detecta atualizações de versão do addon entre membros do grupo transmitindo e recebendo a versão"
+L["New version available! %s"] = "Nova versão disponível! %s"
+L["Download"] = "Baixar"
+L["Restart the game to finish updating DragonUI. If this message keeps showing, reinstall it."] = "Reinicie o jogo para concluir a atualização do DragonUI. Se esta mensagem continuar aparecendo, reinstale-o."
+L["DragonUI and DragonUI_Options are from different versions. Install both from the same download."] = "DragonUI e DragonUI_Options são de versões diferentes. Instale os dois do mesmo download."
 
 -- Nameplate addon compatibility popup
 L["Reads native nameplate alpha to identify the target's plate; conflicts with DragonUI's default anti-dim behavior."] = "Usa a transparência nativa da placa para identificar a placa do alvo; conflita com o comportamento anti-escurecimento padrão do DragonUI."
@@ -1097,6 +1101,12 @@ L["Turn it back on from the AddOns list at character selection."] = "Reative-o p
 -- ============================================================================
 L["Flight Map"] = "Mapa de voo"
 L["Retail-style flight master map window chrome"] = "Visual estilo Retail para a janela do mapa de voo"
+L["Inspect Window"] = "Janela de inspeção"
+L["Retail-style frame and tabs for the inspect window"] = "Moldura e abas estilo Retail para a janela de inspeção"
+L["Dressing Room"] = "Provador"
+L["Retail-style frame for the dressing room"] = "Moldura estilo Retail para o provador"
+L["Retail (by class)"] = "Retail (por classe)"
+L["Wrath (by race)"] = "Wrath (por raça)"
 L["Mail"] = "Correio"
 L["Retail-style mail window with Open All button"] = "Janela de correio estilo Retail com botão Abrir tudo"
 L["Open All"] = "Abrir tudo"

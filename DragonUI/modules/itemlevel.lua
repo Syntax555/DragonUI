@@ -522,11 +522,13 @@ local function GetOrCreateAverageText(key, parent, modelFrame)
     if averageTexts[key] then return averageTexts[key] end
     if not parent or not modelFrame then return nil end
 
-    local y = AVERAGE_Y_OFFSET[key] or 0
+    -- A window that resizes its viewport says where the line clears its own slots.
+    local y = modelFrame._duiItemLevelY or AVERAGE_Y_OFFSET[key] or 0
+    local rect = modelFrame._duiItemLevelAnchor or modelFrame
     local holder = CreateFrame("Frame", nil, parent)
     holder:SetFrameLevel(modelFrame:GetFrameLevel() + 5)
-    holder:SetPoint("BOTTOMLEFT", modelFrame, "BOTTOMLEFT", 0, y)
-    holder:SetPoint("BOTTOMRIGHT", modelFrame, "BOTTOMRIGHT", 0, y)
+    holder:SetPoint("BOTTOMLEFT", rect, "BOTTOMLEFT", 0, y)
+    holder:SetPoint("BOTTOMRIGHT", rect, "BOTTOMRIGHT", 0, y)
     holder:SetHeight(20)
 
     local fontString = holder:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
